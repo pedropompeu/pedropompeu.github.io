@@ -1,0 +1,1586 @@
+/* ==========================================================================
+   Pompeu Web · site.css (home e 404)
+   Celular primeiro: base em 320–599px, depois 600px, 960px (.fluxo em 2 colunas) e 1024px.
+   Toda cor e medida da marca vem de tokens.css (carregado antes).
+   Estados alternados pelo JS (Task 4):
+     .is-ativo / [aria-pressed="true"]  segmento escolhido
+     .is-ativo / [aria-selected="true"] aba Celular/Computador
+     #previa[data-modo="celular|computador"]
+     #previa[data-estado="vazio|carregando|pronto|erro"]
+     #celular --cel-rot-y / --cel-rot-x  inclinação 3D
+     #previa-frame --escala               escala do modo computador
+     #titulo-home .palavra > .letra       peso por letra; texto real em .sr-only
+     html.sem-movimento                   movimento desligado
+   ========================================================================== */
+
+
+/* --- Fontes locais (woff2 variáveis) --- */
+@font-face {
+  font-family: 'Fraunces';
+  src: url('../fonts/fraunces-var.woff2') format('woff2');
+  font-weight: 300 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Instrument Sans';
+  src: url('../fonts/instrument-sans-400.woff2') format('woff2');
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+/* --- Base --- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overflow-x: clip;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: clip;
+  background-color: var(--cor-fundo-pagina);
+  color: var(--cor-texto);
+  font-family: var(--fonte-texto);
+  font-size: var(--fs-corpo);
+  font-weight: var(--peso-regular);
+  line-height: var(--lh-texto);
+  font-variant-numeric: var(--numeros);
+}
+
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+figure {
+  margin: 0;
+}
+
+h1,
+h2 {
+  font-family: var(--fonte-titulo);
+  font-weight: var(--peso-titulo);
+  line-height: var(--lh-titulo);
+  letter-spacing: var(--ls-titulo);
+  text-wrap: balance;
+}
+
+h3 {
+  font-family: var(--fonte-titulo);
+  font-size: var(--fs-subtitulo);
+  font-weight: var(--peso-titulo);
+  line-height: var(--lh-justo);
+}
+
+p {
+  text-wrap: pretty;
+}
+
+img,
+svg,
+iframe {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+svg {
+  flex-shrink: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: .2em;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+strong {
+  font-weight: var(--peso-forte);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+
+/* --- S1 · grão de papel por cima de tudo --- */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: var(--textura-grao);
+  opacity: var(--textura-grao-opacidade);
+  mix-blend-mode: var(--textura-grao-mistura);
+  pointer-events: none;
+  z-index: var(--z-grao);
+}
+
+
+/* --- S2 · manchas de luz (fixas, atrás do conteúdo) --- */
+.mancha {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(var(--mancha-blur));
+  opacity: var(--mancha-opacidade);
+  pointer-events: none;
+  z-index: var(--z-mancha);
+  transition: var(--mancha-transicao);
+}
+
+.mancha-1 {
+  width: var(--mancha-tamanho-1);
+  height: var(--mancha-tamanho-1);
+  left: calc(var(--mancha-tamanho-1) * -.25);
+  top: calc(var(--mancha-tamanho-1) * -.2);
+  background: var(--cor-mancha-1);
+}
+
+.mancha-2 {
+  width: var(--mancha-tamanho-2);
+  height: var(--mancha-tamanho-2);
+  right: calc(var(--mancha-tamanho-2) * -.25);
+  top: calc(var(--esp-xl) * 4);
+  background: var(--cor-mancha-2);
+}
+
+.mancha-3 {
+  width: var(--mancha-tamanho-3);
+  height: var(--mancha-tamanho-3);
+  left: 35%;
+  top: calc(var(--mancha-tamanho-3) * 1.3);
+  background: var(--cor-mancha-3);
+}
+
+
+/* --- Foco visível em todo interativo --- */
+:focus-visible {
+  outline: var(--foco-largura) solid var(--cor-foco);
+  outline-offset: var(--foco-offset);
+}
+
+.pular {
+  position: absolute;
+  left: var(--esp-md);
+  top: var(--esp-md);
+  z-index: var(--z-modal);
+  padding: var(--btn-vidro-padding);
+  border-radius: var(--raio-pilula);
+  background: var(--cor-fundo-invertido);
+  color: var(--cor-texto-invertido);
+  font: var(--btn-vidro-fonte);
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.pular:focus-visible {
+  transform: none;
+  outline-color: var(--cor-foco);
+}
+
+
+/* --- Camadas de conteúdo acima das manchas ---
+   O topo não cria contexto de empilhamento: as manchas fixas dentro dele
+   ficam atrás de todo o conteúdo, inclusive do cabeçalho. */
+.cabecalho,
+main > :not(.hero),
+.hero > :not(.mancha),
+.rodape {
+  position: relative;
+  z-index: var(--z-conteudo);
+}
+
+
+/* ==========================================================================
+   Botões
+   ========================================================================== */
+
+/* --- S6 · Botão WhatsApp (único verde) --- */
+.btn-whats {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--btn-whats-gap);
+  min-height: var(--btn-whats-alvo-min);
+  padding: var(--btn-whats-padding);
+  border-radius: var(--btn-whats-raio);
+  background: var(--btn-whats-bg);
+  color: var(--btn-whats-texto);
+  font: var(--btn-whats-fonte);
+  text-align: center;
+  text-decoration: none;
+  box-shadow: var(--btn-whats-sombra);
+  transition: var(--btn-whats-transicao);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-whats:focus-visible {
+  outline-color: var(--btn-whats-anel-foco);
+}
+
+.btn-whats:active {
+  background: var(--btn-whats-bg-active);
+  transform: scale(var(--mov-pressionar));
+}
+
+/* --- S3 · Botão de vidro --- */
+.btn-vidro {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-gap-inline);
+  min-height: var(--btn-whats-alvo-min);
+  padding: var(--btn-vidro-padding);
+  border: 1px solid var(--btn-vidro-borda);
+  border-radius: var(--btn-vidro-raio);
+  background: var(--btn-vidro-bg);
+  -webkit-backdrop-filter: blur(var(--btn-vidro-blur));
+  backdrop-filter: blur(var(--btn-vidro-blur));
+  color: var(--btn-vidro-texto);
+  font: var(--btn-vidro-fonte);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform var(--dur-rapido) var(--ease-mola), background-color var(--dur-rapido) var(--ease-saida);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-vidro:focus-visible {
+  outline-color: var(--btn-vidro-anel-foco);
+}
+
+.btn-vidro:active {
+  background: var(--btn-vidro-bg-active);
+  transform: scale(var(--mov-pressionar));
+}
+
+@media (hover: hover) {
+  .btn-whats:hover {
+    background: var(--btn-whats-bg-hover);
+    box-shadow: var(--btn-whats-sombra-hover);
+    transform: translateY(var(--btn-whats-elevar));
+  }
+
+  .btn-whats:active {
+    background: var(--btn-whats-bg-active);
+    transform: scale(var(--mov-pressionar));
+  }
+
+  .btn-vidro:hover {
+    background: var(--btn-vidro-bg-hover);
+    transform: translateY(var(--mov-elevar));
+  }
+
+  .btn-vidro:active {
+    background: var(--btn-vidro-bg-active);
+    transform: scale(var(--mov-pressionar));
+  }
+}
+
+/* --- Desabilitado e carregando (vale para botão, pílula e aba) --- */
+.btn-whats[aria-disabled="true"],
+.btn-vidro[aria-disabled="true"],
+.btn-vidro:disabled,
+.segmento[aria-disabled="true"],
+.segmento:disabled,
+[role="tab"]:disabled,
+[role="tab"][aria-disabled="true"] {
+  opacity: var(--opacidade-desabilitado);
+  cursor: var(--cursor-desabilitado);
+  transform: none;
+  box-shadow: none;
+}
+
+[aria-busy="true"] {
+  cursor: progress;
+}
+
+/* --- Link com seta --- */
+.link-seta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--esp-xs);
+  min-height: var(--btn-whats-alvo-min);
+  color: var(--cor-texto);
+  font-weight: var(--peso-forte);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: .25em;
+}
+
+.link-seta svg {
+  transition: transform var(--dur-rapido) var(--ease-mola);
+}
+
+@media (hover: hover) {
+  .link-seta:hover svg {
+    transform: translateX(var(--esp-xs));
+  }
+}
+
+
+/* ==========================================================================
+   Cabeçalho
+   ========================================================================== */
+.cabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-sm) var(--esp-md);
+  max-width: var(--largura-max);
+  margin-inline: auto;
+  padding: var(--esp-gutter) var(--esp-gutter) 0;
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--btn-whats-alvo-min);
+  border-radius: var(--raio-sm);
+}
+
+/* Assinatura inline: o <text> usa a fonte da página (um <img> não acessa
+   as web fonts e cairia numa serifa de sistema mais larga, cortando o nome). */
+.logo-svg {
+  display: block;
+  width: 140px;
+  height: auto;
+}
+
+.logo-svg text {
+  font-family: var(--fonte-titulo);
+}
+
+.logo-balao {
+  fill: var(--logo-balao);
+}
+
+.logo-letra {
+  fill: var(--logo-letra);
+  font-weight: var(--logo-wght-repouso);
+}
+
+.logo-ponto {
+  fill: var(--logo-ponto);
+}
+
+.logo-nome {
+  fill: var(--cor-texto);
+  letter-spacing: var(--ls-logo);
+}
+
+.logo-nome-forte {
+  font-weight: var(--peso-pesado);
+}
+
+.logo-nome-leve {
+  font-weight: var(--peso-regular);
+}
+
+.menu {
+  display: flex;
+  flex-wrap: wrap;
+  flex-basis: 100%;
+  order: 3;
+  gap: var(--esp-xs);
+  margin-inline: calc(var(--esp-sm) * -1);
+}
+
+.menu a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--btn-whats-alvo-min);
+  padding-inline: var(--esp-sm);
+  border-radius: var(--raio-pilula);
+  color: var(--cor-texto);
+  font-size: var(--fs-legenda);
+  font-weight: var(--peso-forte);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: .35em;
+}
+
+@media (hover: hover) {
+  .menu a:hover {
+    background: var(--cor-fundo-vidro);
+  }
+}
+
+#whats-topo {
+  display: none;
+}
+
+
+/* ==========================================================================
+   Topo (hero)
+   ========================================================================== */
+.hero {
+  max-width: var(--largura-max);
+  margin-inline: auto;
+  padding: var(--esp-lg) var(--esp-gutter) var(--esp-xl);
+}
+
+/* Etiqueta flutuante com o endereço digitado */
+.url-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--esp-gap-inline);
+  margin-bottom: var(--esp-gutter);
+  padding: var(--tag-padding);
+  border: 1px solid var(--tag-borda);
+  border-radius: var(--tag-raio);
+  background: var(--tag-bg);
+  -webkit-backdrop-filter: blur(var(--tag-blur));
+  backdrop-filter: blur(var(--tag-blur));
+  box-shadow: var(--tag-sombra);
+  font-size: var(--fs-legenda);
+  font-weight: var(--peso-forte);
+  transform: rotate(var(--tag-rotacao-2));
+  transform-origin: left center;
+}
+
+.url-tag::before {
+  content: "";
+  width: var(--esp-gap-inline);
+  height: var(--esp-gap-inline);
+  border-radius: 50%;
+  background: var(--logo-ponto);
+  box-shadow: 0 0 0 var(--esp-xs) var(--cor-fundo-vidro);
+}
+
+#hero-endereco {
+  min-height: 1lh;
+  display: inline-block;
+  min-width: 1ch;
+}
+
+#hero-endereco::after {
+  content: "";
+  display: inline-block;
+  width: 1.5px;
+  height: 1.1em;
+  margin-left: 2px;
+  vertical-align: -.15em;
+  background: currentColor;
+  animation: piscar 1s steps(1) infinite;
+}
+
+@keyframes piscar {
+  50% {
+    opacity: 0;
+  }
+}
+
+#titulo-home {
+  margin-bottom: var(--esp-gutter);
+  font-size: var(--fs-titulo-home);
+  font-weight: var(--titulo-wght-repouso);
+}
+
+#titulo-home .palavra {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+#titulo-home .letra {
+  display: inline-block;
+  font-variation-settings: "wght" var(--titulo-wght-repouso);
+  transition: font-variation-settings var(--titulo-wght-transicao) var(--ease-saida);
+}
+
+.hero-texto {
+  max-width: var(--largura-texto);
+  color: var(--cor-texto-2);
+  font-size: var(--fs-lead);
+}
+
+.hero-preco {
+  max-width: var(--largura-texto);
+  margin-top: var(--esp-md);
+  color: var(--cor-texto-2);
+  font-size: var(--fs-legenda);
+}
+
+.hero-acoes {
+  margin-top: var(--esp-lg);
+}
+
+
+/* ==========================================================================
+   Seções
+   ========================================================================== */
+.secao {
+  max-width: var(--largura-max);
+  margin-inline: auto;
+  padding: var(--esp-secao-celular) var(--esp-gutter) 0;
+}
+
+.secao > h2 {
+  margin-bottom: var(--esp-sm);
+  font-size: var(--fs-titulo-secao);
+}
+
+.secao-texto {
+  max-width: var(--largura-texto);
+  margin-bottom: var(--esp-gutter);
+  color: var(--cor-texto-2);
+  font-size: var(--fs-lead);
+}
+
+.secao-nota {
+  margin-top: var(--esp-md);
+  color: var(--cor-texto-2);
+  font-size: var(--fs-legenda);
+}
+
+/* Rótulo em caixa alta (como "Prancha da marca" do layout) */
+.lista-titulo {
+  margin: var(--esp-lg) 0 var(--esp-sm);
+  color: var(--cor-texto-2);
+  font-family: var(--fonte-texto);
+  font-size: var(--fs-legenda);
+  font-weight: var(--peso-forte);
+  letter-spacing: var(--ls-rotulo);
+  line-height: var(--lh-texto);
+  text-transform: uppercase;
+}
+
+
+/* --- Pílulas de segmento: 2×2 no celular --- */
+.segmentos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--pilula-gap);
+}
+
+.segmento {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-gap-inline);
+  min-height: var(--btn-whats-alvo-min);
+  padding: var(--pilula-padding);
+  border: 1px solid var(--pilula-borda);
+  border-radius: var(--pilula-raio);
+  background: var(--pilula-bg);
+  -webkit-backdrop-filter: blur(var(--pilula-blur));
+  backdrop-filter: blur(var(--pilula-blur));
+  color: var(--pilula-texto);
+  font: var(--pilula-fonte);
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--pilula-transicao);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.segmento svg {
+  width: 1.25em;
+  height: 1.25em;
+}
+
+.segmento:focus-visible {
+  outline: var(--pilula-foco-largura) solid var(--pilula-anel-foco);
+  outline-offset: var(--pilula-foco-offset);
+}
+
+.segmento:active {
+  transform: scale(var(--pilula-escala-active));
+}
+
+.segmento.is-ativo,
+.segmento[aria-pressed="true"] {
+  border-color: var(--pilula-borda-ativa);
+  background: var(--pilula-bg-ativa);
+  color: var(--pilula-texto-ativa);
+}
+
+@media (hover: hover) {
+  .segmento:hover {
+    border-color: var(--pilula-borda-hover);
+    background: var(--pilula-bg-hover);
+    transform: translateY(var(--pilula-elevar-hover));
+  }
+
+  .segmento.is-ativo:hover,
+  .segmento[aria-pressed="true"]:hover {
+    border-color: var(--pilula-borda-ativa);
+    background: var(--pilula-bg-ativa-hover);
+  }
+
+  .segmento:active {
+    transform: scale(var(--pilula-escala-active));
+  }
+}
+
+
+/* ==========================================================================
+   Prévia
+   ========================================================================== */
+.previa-barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--esp-sm) var(--esp-md);
+  margin-bottom: var(--esp-gutter);
+}
+
+/* Abas Celular/Computador num trilho de vidro */
+[role="tablist"] {
+  display: inline-flex;
+  gap: var(--esp-xs);
+  padding: var(--esp-xs);
+  border: 1px solid var(--cor-borda-vidro);
+  border-radius: var(--raio-pilula);
+  background: var(--cor-fundo-vidro);
+  -webkit-backdrop-filter: blur(var(--vidro-blur));
+  backdrop-filter: blur(var(--vidro-blur));
+}
+
+[role="tab"] {
+  min-height: var(--btn-whats-alvo-min);
+  padding: var(--pilula-padding);
+  border: 0;
+  border-radius: var(--pilula-raio);
+  background: transparent;
+  color: var(--pilula-texto);
+  font: var(--pilula-fonte);
+  cursor: pointer;
+  transition: var(--pilula-transicao);
+  -webkit-tap-highlight-color: transparent;
+}
+
+[role="tab"]:focus-visible {
+  outline: var(--pilula-foco-largura) solid var(--pilula-anel-foco);
+  outline-offset: var(--pilula-foco-offset);
+}
+
+[role="tab"]:active {
+  transform: scale(var(--pilula-escala-active));
+}
+
+[role="tab"].is-ativo,
+[role="tab"][aria-selected="true"] {
+  background: var(--pilula-bg-ativa);
+  color: var(--pilula-texto-ativa);
+}
+
+@media (hover: hover) {
+  [role="tab"]:hover {
+    background: var(--pilula-bg-hover);
+  }
+
+  [role="tab"].is-ativo:hover,
+  [role="tab"][aria-selected="true"]:hover {
+    background: var(--pilula-bg-ativa-hover);
+  }
+}
+
+#previa-status {
+  flex: 1 1 12rem;
+  color: var(--cor-texto-2);
+  font-size: var(--fs-legenda);
+  line-height: var(--lh-legenda);
+}
+
+/* --- S4 · Moldura do celular --- */
+.celular {
+  position: relative;
+  width: var(--cel-largura);
+  max-width: 100%;
+  height: var(--cel-altura);
+  margin-inline: auto;
+  padding: var(--cel-padding);
+  overflow: hidden;
+  overflow: clip;
+  border: 1px solid var(--cel-borda);
+  border-radius: var(--cel-raio);
+  background: var(--cel-bg);
+  -webkit-backdrop-filter: blur(var(--cel-blur));
+  backdrop-filter: blur(var(--cel-blur));
+  box-shadow: var(--cel-sombra);
+  transform: perspective(var(--cel-perspectiva)) rotateY(var(--cel-rot-y, 0deg)) rotateX(var(--cel-rot-x, 0deg));
+  transition: var(--cel-transicao);
+}
+
+/* Tela: o modelo é renderizado a 390px e reduzido para caber na moldura */
+#previa-frame {
+  position: relative;
+  z-index: var(--z-conteudo);
+  width: var(--cel-tela-base);
+  max-width: none;
+  height: calc((var(--cel-altura) - 2 * var(--cel-padding)) / var(--cel-tela-escala));
+  border: 0;
+  border-radius: calc(var(--cel-tela-raio) / var(--cel-tela-escala));
+  background: var(--cor-fundo-pagina);
+  transform: scale(var(--cel-tela-escala));
+  transform-origin: 0 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--dur-lento) var(--ease-saida), visibility 0s linear var(--dur-lento);
+}
+
+/* Tela de espera (sem JS, vazio, carregando, erro): esqueleto calmo do layout */
+.celular::before,
+.celular::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  transition: opacity var(--dur-lento) var(--ease-saida);
+}
+
+.celular::before {
+  inset: var(--cel-padding);
+  border-radius: var(--cel-tela-raio);
+  background:
+    linear-gradient(var(--cel-divisoria), var(--cel-divisoria)) 9% 58% / 58% 3.2% no-repeat,
+    linear-gradient(var(--cel-divisoria), var(--cel-divisoria)) 9% 66% / 72% 2.4% no-repeat,
+    linear-gradient(var(--cel-divisoria), var(--cel-divisoria)) 9% 73% / 50% 2.4% no-repeat,
+    linear-gradient(var(--cel-divisoria), var(--cel-divisoria)) 9% 80% / 64% 2.4% no-repeat,
+    linear-gradient(150deg, var(--cor-mancha-1), var(--cor-mancha-2)) top / 100% 46% no-repeat,
+    var(--cor-fundo-vidro);
+}
+
+/* Botão de WhatsApp do mock, em esqueleto neutro */
+.celular::after {
+  left: calc(var(--cel-padding) + var(--esp-md));
+  right: calc(var(--cel-padding) + var(--esp-md));
+  bottom: calc(var(--cel-padding) + var(--esp-md));
+  height: var(--btn-whats-alvo-min);
+  border-radius: var(--raio-pilula);
+  background: var(--cel-divisoria);
+}
+
+/* Carregando: brilho passando pelo esqueleto */
+#previa[data-estado="carregando"] .celular::before {
+  background:
+    linear-gradient(100deg, transparent 35%, var(--cor-fundo-vidro-hover) 50%, transparent 65%) 0 0 / 300% 100% no-repeat,
+    linear-gradient(var(--cel-divisoria), var(--cel-divisoria)) 9% 58% / 58% 3.2% no-repeat,
+    linear-gradient(var(--cel-divisoria), var(--cel-divisoria)) 9% 66% / 72% 2.4% no-repeat,
+    linear-gradient(var(--cel-divisoria), var(--cel-divisoria)) 9% 73% / 50% 2.4% no-repeat,
+    linear-gradient(var(--cel-divisoria), var(--cel-divisoria)) 9% 80% / 64% 2.4% no-repeat,
+    linear-gradient(150deg, var(--cor-mancha-1), var(--cor-mancha-2)) top / 100% 46% no-repeat,
+    var(--cor-fundo-vidro);
+  animation: brilho calc(var(--dur-deriva) * 1.25) linear infinite;
+}
+
+@keyframes brilho {
+  from {
+    background-position: 100% 0, 9% 58%, 9% 66%, 9% 73%, 9% 80%, top, 0 0;
+  }
+  to {
+    background-position: 0 0, 9% 58%, 9% 66%, 9% 73%, 9% 80%, top, 0 0;
+  }
+}
+
+/* Pronto: o modelo aparece e o esqueleto some */
+#previa[data-estado="pronto"] #previa-frame {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity var(--dur-lento) var(--ease-saida);
+}
+
+#previa[data-estado="pronto"] .celular::before,
+#previa[data-estado="pronto"] .celular::after {
+  opacity: 0;
+}
+
+/* S7 · Erro: tela em rosa claro e a mensagem do status vira aviso */
+#previa[data-estado="erro"] .celular::before {
+  background: var(--cor-erro-fundo);
+}
+
+#previa[data-estado="erro"] .celular::after {
+  background: var(--cor-erro-borda);
+  opacity: .35;
+}
+
+#previa[data-estado="erro"] #previa-status {
+  flex-basis: 100%;
+  padding: var(--esp-sm) var(--esp-md);
+  border: 1px solid var(--cor-erro-borda);
+  border-radius: var(--raio-md);
+  background: var(--cor-erro-fundo);
+  color: var(--cor-erro-texto);
+  font-weight: var(--peso-forte);
+}
+
+/* Botão "Tentar de novo" que o JS insere (classe btn-vidro previa-tentar) */
+.previa-tentar {
+  margin-top: var(--esp-sm);
+}
+
+#previa[data-estado="erro"] .previa-tentar {
+  border-color: var(--cor-erro-borda);
+  color: var(--cor-erro-texto);
+}
+
+/* --- Modo computador: janela larga, iframe 1280×800 reduzido por --escala --- */
+/* A janela segue a proporção 1280:800 do iframe; o JS define --escala no iframe
+   como (largura interna de #celular) / 1280, ou seja, clientWidth menos 2 × padding. */
+#previa[data-modo="computador"] .celular {
+  box-sizing: content-box;
+  width: calc(100% - 2 * var(--previa-pc-padding) - 2px);
+  max-width: var(--previa-pc-largura);
+  height: auto;
+  min-height: 0;
+  aspect-ratio: 1280 / 800;
+  padding: var(--previa-pc-padding);
+  border-radius: var(--previa-pc-raio);
+  transform: none;
+}
+
+#previa[data-modo="computador"] #previa-frame {
+  width: var(--previa-pc-largura);
+  height: var(--previa-pc-altura);
+  border-radius: calc(var(--raio-sm) / var(--escala, .25));
+  transform: scale(var(--escala, .25));
+}
+
+#previa[data-modo="computador"] .celular::before {
+  inset: var(--previa-pc-padding);
+  border-radius: var(--raio-sm);
+}
+
+#previa[data-modo="computador"] .celular::after {
+  left: auto;
+  right: calc(var(--previa-pc-padding) + var(--esp-md));
+  bottom: calc(var(--previa-pc-padding) + var(--esp-md));
+  width: 30%;
+  height: var(--esp-lg);
+}
+
+/* --- Ações e links da prévia --- */
+.previa-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--esp-sm);
+  margin-top: var(--esp-lg);
+}
+
+.previa-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 var(--esp-md);
+  margin-top: var(--esp-sm);
+  padding: 0;
+  list-style: none;
+  font-size: var(--fs-legenda);
+}
+
+.previa-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--btn-whats-alvo-min);
+  color: var(--cor-texto-2);
+}
+
+/* --- Vem incluso --- */
+.incluso {
+  display: grid;
+  gap: var(--esp-gap-inline);
+  padding: 0;
+  list-style: none;
+}
+
+.incluso li {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-sm);
+  padding: var(--esp-sm) var(--esp-md);
+  border: 1px solid var(--cartao-borda);
+  border-radius: var(--raio-md);
+  background: var(--cartao-bg);
+  -webkit-backdrop-filter: blur(var(--vidro-blur-leve));
+  backdrop-filter: blur(var(--vidro-blur-leve));
+  font-size: var(--fs-legenda);
+  font-weight: var(--peso-forte);
+}
+
+.incluso svg {
+  width: 1.5em;
+  height: 1.5em;
+}
+
+
+/* ==========================================================================
+   Planos
+   ========================================================================== */
+.oferta {
+  display: grid;
+  gap: var(--esp-sm);
+  margin-bottom: var(--esp-gap-cartoes);
+  padding: var(--plano-padding);
+  border: 1px solid var(--cor-borda-vidro);
+  border-radius: var(--plano-raio);
+  background: var(--cor-aviso-fundo);
+}
+
+.oferta-vagas {
+  color: var(--cor-texto-destaque);
+  font-family: var(--fonte-titulo);
+  font-size: var(--fs-subtitulo);
+  line-height: var(--lh-justo);
+}
+
+.oferta-vagas strong {
+  font-weight: var(--peso-pesado);
+}
+
+.oferta .btn-whats {
+  margin-top: var(--esp-xs);
+}
+
+.planos {
+  display: grid;
+  gap: var(--esp-gap-cartoes);
+}
+
+.plano {
+  display: flex;
+  flex-direction: column;
+  gap: var(--plano-gap);
+  padding: var(--plano-padding);
+  border: 1px solid var(--plano-borda);
+  border-radius: var(--plano-raio);
+  background: var(--plano-bg);
+  -webkit-backdrop-filter: blur(var(--plano-blur));
+  backdrop-filter: blur(var(--plano-blur));
+  color: var(--plano-texto);
+  transition: transform var(--dur-rapido) var(--ease-mola), box-shadow var(--dur-rapido) var(--ease-saida);
+}
+
+.plano h3 {
+  font: var(--plano-nome-fonte);
+  letter-spacing: var(--plano-nome-ls);
+  text-transform: uppercase;
+}
+
+.plano-preco {
+  font: var(--plano-preco-fonte);
+  font-variant-numeric: var(--plano-preco-numeros);
+  letter-spacing: var(--plano-preco-ls);
+  text-wrap: balance;
+}
+
+.plano-detalhe {
+  margin-top: calc(var(--esp-xs) * -1);
+  color: var(--plano-texto-2);
+  font-size: var(--fs-legenda);
+}
+
+.plano > p:not([class]) {
+  color: var(--plano-texto-2);
+}
+
+.plano-cta {
+  margin-top: auto;
+}
+
+.plano-destaque {
+  border-color: var(--plano-borda-destaque);
+  background: var(--plano-bg-destaque);
+  color: var(--plano-texto-destaque);
+  box-shadow: var(--plano-sombra);
+}
+
+.plano-destaque .plano-detalhe,
+.plano-destaque > p:not([class]) {
+  color: var(--plano-texto-2-destaque);
+}
+
+.plano-destaque :focus-visible {
+  outline-color: var(--plano-anel-foco-destaque);
+}
+
+@media (hover: hover) {
+  .plano:hover {
+    box-shadow: var(--plano-sombra);
+    transform: translateY(var(--mov-elevar));
+  }
+}
+
+
+/* ==========================================================================
+   Como funciona
+   ========================================================================== */
+.passos {
+  display: grid;
+  gap: var(--esp-gap-cartoes);
+  padding: 0;
+  list-style: none;
+}
+
+.passos li {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-md);
+  padding: var(--cartao-padding);
+  border: 1px solid var(--cartao-borda);
+  border-radius: var(--cartao-raio);
+  background: var(--cartao-bg);
+  -webkit-backdrop-filter: blur(var(--cartao-blur));
+  backdrop-filter: blur(var(--cartao-blur));
+  font-weight: var(--peso-forte);
+}
+
+.passo-num {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: var(--esp-xl);
+  height: var(--esp-xl);
+  border-radius: var(--raio-sm);
+  background: var(--logo-balao);
+  color: var(--logo-letra);
+  font-family: var(--fonte-titulo);
+  font-size: var(--fs-subtitulo);
+  font-weight: var(--peso-pesado);
+  line-height: var(--lh-justo);
+}
+
+
+/* ==========================================================================
+   Sistemas (cartões de vidro)
+   ========================================================================== */
+.casos {
+  display: grid;
+  gap: var(--esp-gap-cartoes);
+}
+
+.caso {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-sm);
+  padding: var(--cartao-padding);
+  border: 1px solid var(--cartao-borda);
+  border-radius: var(--cartao-raio);
+  background: var(--cartao-bg);
+  -webkit-backdrop-filter: blur(var(--cartao-blur));
+  backdrop-filter: blur(var(--cartao-blur));
+  color: var(--cartao-texto);
+}
+
+.caso img {
+  width: 100%;
+  border-radius: var(--raio-sm);
+  background: var(--cel-divisoria);
+}
+
+.caso h3 {
+  margin-top: var(--esp-xs);
+}
+
+.caso p {
+  color: var(--cartao-texto-2);
+  font-size: var(--fs-legenda);
+  line-height: var(--lh-legenda);
+}
+
+.caso p strong {
+  color: var(--cartao-texto);
+}
+
+.caso .link-seta {
+  font-size: var(--fs-corpo);
+}
+
+.caso-quadros {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  align-items: start;
+  gap: var(--esp-gap-inline);
+}
+
+
+/* ==========================================================================
+   Sobre e FAQ
+   ========================================================================== */
+#sobre > p {
+  max-width: var(--largura-texto);
+  color: var(--cor-texto-2);
+  font-size: var(--fs-lead);
+}
+
+#sobre > p + p {
+  margin-top: var(--esp-sm);
+}
+
+#sobre .sobre-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--esp-lg);
+  font-size: var(--fs-corpo);
+}
+
+#faq details {
+  margin-bottom: var(--esp-gap-inline);
+  border: 1px solid var(--cartao-borda);
+  border-radius: var(--cartao-raio);
+  background: var(--cartao-bg);
+  -webkit-backdrop-filter: blur(var(--cartao-blur));
+  backdrop-filter: blur(var(--cartao-blur));
+}
+
+#faq summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-md);
+  min-height: var(--btn-whats-alvo-min);
+  padding: var(--esp-md) var(--cartao-padding);
+  border-radius: var(--cartao-raio);
+  font-weight: var(--peso-forte);
+  list-style: none;
+  cursor: pointer;
+}
+
+#faq summary::-webkit-details-marker {
+  display: none;
+}
+
+#faq summary::after {
+  content: "";
+  flex: 0 0 auto;
+  width: var(--esp-md);
+  height: var(--esp-md);
+  background:
+    linear-gradient(currentColor, currentColor) center / 100% 2px no-repeat,
+    linear-gradient(currentColor, currentColor) center / 2px 100% no-repeat;
+  transition: transform var(--dur-rapido) var(--ease-mola);
+}
+
+#faq details[open] summary::after {
+  transform: rotate(45deg);
+}
+
+#faq details p {
+  padding: 0 var(--cartao-padding) var(--esp-md);
+  color: var(--cartao-texto-2);
+}
+
+
+/* ==========================================================================
+   S5 · Rodapé em tinta
+   ========================================================================== */
+.rodape {
+  margin-top: var(--esp-secao);
+  padding: var(--esp-secao) max(var(--esp-gutter), (100% - var(--largura-max)) / 2 + var(--esp-gutter));
+  padding-bottom: calc(var(--btn-whats-fixo-tamanho) + 2 * var(--btn-whats-fixo-distancia) + env(safe-area-inset-bottom, 0px));
+  background: var(--cor-fundo-invertido);
+  color: var(--cor-texto-sobre-tinta);
+  font-size: var(--fs-corpo);
+  line-height: var(--lh-texto);
+}
+
+/* Chamada final: uma pergunta, um botão verde e o e-mail como alternativa. */
+.rodape-chamada {
+  display: grid;
+  gap: var(--esp-sm);
+  justify-items: start;
+}
+
+.rodape-titulo {
+  max-width: 18ch;
+  color: var(--cor-texto-invertido);
+  font-family: var(--fonte-titulo);
+  font-size: var(--fs-titulo-secao);
+  font-weight: var(--peso-pesado);
+  line-height: var(--lh-titulo);
+  text-wrap: balance;
+}
+
+.rodape-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--esp-sm) var(--esp-md);
+  margin-top: var(--esp-sm);
+}
+
+.rodape-alt {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--esp-sm);
+}
+
+.rodape-ou {
+  font-size: var(--fs-legenda);
+}
+
+/* Faixa fina: logo, © e Privacidade. */
+.rodape-faixa {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--esp-xs) var(--esp-lg);
+  margin-top: var(--esp-xl);
+  padding-top: var(--esp-md);
+  border-top: 1px solid var(--rodape-divisoria);
+  font-size: var(--fs-legenda);
+  line-height: var(--lh-legenda);
+}
+
+.rodape-faixa p {
+  margin-right: auto;
+}
+
+/* Celular: logo numa linha, © e Privacidade nas pontas da linha de baixo. */
+@media (max-width: 599px) {
+  .rodape-faixa {
+    display: grid;
+    grid-template-columns: 1fr auto;
+  }
+
+  .rodape-logo {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}
+
+.rodape-logo {
+  display: inline-block;
+  padding-block: var(--esp-sm);
+}
+
+.rodape-logo .logo-svg {
+  width: 120px;
+}
+
+/* Logo sobre tinta: balão lavanda, "P" em tinta (como simbolo-claro.svg). */
+.rodape .logo-balao {
+  fill: var(--cor-texto-sobre-tinta);
+}
+
+.rodape .logo-letra {
+  fill: var(--cor-fundo-invertido);
+}
+
+.rodape .logo-nome {
+  fill: var(--cor-texto-invertido);
+}
+
+.rodape a:not(.btn-whats):not(.rodape-logo) {
+  display: inline-block;
+  padding-block: var(--esp-sm);
+  color: var(--cor-texto-invertido);
+}
+
+.rodape :focus-visible {
+  outline-color: var(--cor-foco-sobre-escuro);
+}
+
+
+/* --- Botão fixo de WhatsApp (celular e tablet) --- */
+.whats-fixo {
+  position: fixed;
+  right: var(--btn-whats-fixo-distancia);
+  bottom: calc(var(--btn-whats-fixo-distancia) + env(safe-area-inset-bottom, 0px));
+  z-index: var(--btn-whats-fixo-z);
+  min-height: var(--btn-whats-fixo-tamanho);
+  transition: opacity .2s;
+}
+
+/* Escondido enquanto os botões da prévia estão à vista (evita sobreposição) */
+.whats-fixo[data-oculto] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+
+/* ==========================================================================
+   404
+   ========================================================================== */
+.pagina-404 {
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  gap: var(--esp-lg);
+  min-height: 100vh;
+  min-height: 100svh;
+  padding-bottom: var(--esp-secao-celular);
+}
+
+.pagina-404 h1 {
+  max-width: 18ch;
+  font-size: var(--fs-titulo-secao);
+}
+
+.pagina-404 p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--esp-sm);
+}
+
+
+/* ==========================================================================
+   Página de texto (privacidade)
+   ========================================================================== */
+.pagina-texto {
+  max-width: var(--largura-texto);
+  padding-bottom: var(--esp-secao-celular);
+}
+
+.pagina-texto h1 {
+  margin-bottom: var(--esp-sm);
+  font-size: var(--fs-titulo-secao);
+}
+
+.pagina-texto h2 {
+  margin: var(--esp-lg) 0 var(--esp-xs);
+  font-size: var(--fs-subtitulo);
+}
+
+.pagina-texto p + p {
+  margin-top: var(--esp-sm);
+}
+
+.pagina-texto .btn-vidro {
+  margin-top: var(--esp-md);
+}
+
+
+/* ==========================================================================
+   600px+ (celular grande e tablet)
+   ========================================================================== */
+@media (min-width: 600px) {
+  #whats-topo {
+    display: inline-flex;
+  }
+
+  .segmentos {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .incluso {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .passos {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .passos li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .casos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .caso-dados {
+    grid-column: 1 / -1;
+  }
+
+  .oferta {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: var(--esp-gutter);
+  }
+
+  .oferta > p:not(:last-child) {
+    grid-column: 1;
+  }
+
+  .oferta > p:last-child {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+}
+
+
+/* ==========================================================================
+   960px+ (computador): segmentos à esquerda, prévia à direita e sticky.
+   .fluxo envolve só #modelos e #previa, então o sticky fica preso a esse
+   bloco e a prévia nunca passa por cima dos planos.
+   ========================================================================== */
+@media (min-width: 960px) {
+  .fluxo {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+    column-gap: var(--esp-xl);
+    max-width: var(--largura-max);
+    margin-inline: auto;
+    padding-inline: var(--esp-gutter);
+  }
+
+  .fluxo > .secao {
+    max-width: none;
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+
+  /* Os dois lados são sticky: o mais curto fica parado enquanto o outro
+     rola. Hoje a prévia (com a lista "Vem incluso") é a coluna mais alta,
+     então quem acompanha a rolagem são os segmentos, ao lado do celular. */
+  .fluxo > #modelos,
+  .fluxo > #previa {
+    position: sticky;
+    top: var(--esp-md);
+  }
+}
+
+
+/* ==========================================================================
+   1024px+ (computador)
+   ========================================================================== */
+@media (min-width: 1024px) {
+  .cabecalho {
+    flex-wrap: nowrap;
+  }
+
+  .menu {
+    flex-basis: auto;
+    order: 0;
+    margin-left: auto;
+  }
+
+  .secao {
+    padding-top: var(--esp-secao);
+  }
+
+  .incluso li {
+    padding-block: var(--esp-gap-inline);
+    line-height: var(--lh-legenda);
+  }
+
+  .previa-links,
+  .previa-acoes {
+    justify-content: flex-start;
+  }
+
+  .planos {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+  }
+
+  .casos {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .caso-dados {
+    grid-column: auto;
+  }
+
+  #faq {
+    max-width: 760px;
+  }
+
+  .whats-fixo {
+    display: none;
+  }
+
+  .rodape {
+    padding-bottom: var(--esp-xl);
+  }
+}
+
+
+/* ==========================================================================
+   Movimento reduzido: preferência do sistema ou html.sem-movimento (JS)
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .whats-fixo {
+    transition: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition-duration: 0ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .mancha,
+  .celular {
+    transform: none !important;
+  }
+
+  #titulo-home .letra {
+    font-variation-settings: "wght" var(--titulo-wght-repouso) !important;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.sem-movimento) {
+    scroll-behavior: smooth;
+  }
+}
+
+html.sem-movimento *,
+html.sem-movimento *::before,
+html.sem-movimento *::after {
+  animation: none !important;
+  transition-duration: 0ms !important;
+  transition-delay: 0ms !important;
+}
+
+html.sem-movimento .mancha,
+html.sem-movimento .celular {
+  transform: none !important;
+}
+
+html.sem-movimento #titulo-home .letra {
+  font-variation-settings: "wght" var(--titulo-wght-repouso) !important;
+}
+
+
+/* ==========================================================================
+   Sem backdrop-filter: vidro vira superfície branca semitransparente mais densa
+   ========================================================================== */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .btn-vidro,
+  .segmento,
+  [role="tablist"],
+  .url-tag,
+  .incluso li,
+  .plano:not(.plano-destaque),
+  .passos li,
+  .caso,
+  #faq details {
+    background: var(--btn-vidro-bg-active);
+  }
+
+  .celular {
+    background: var(--cor-fundo-vidro-hover);
+  }
+}

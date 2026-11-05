@@ -1,0 +1,545 @@
+/* ==========================================================================
+   Pompeu Web · design-tokens.css
+   [2026-11-02] (i) MAXWELL, a partir do brand-foundation da ARIA e do layout
+   aprovado marca-v3-fusao.html (e).
+   Stack: HTML/CSS/JS puros, sem build. Tailwind NÃO é usado.
+   Arquitetura em 3 camadas:
+     1. Primitivos  → valores brutos (nunca usados direto em componentes)
+     2. Semânticos  → intenção (texto, fundo, ação, feedback)
+     3. Componentes → escopo de cada peça de interface
+   Ajustes de contraste (AA) estão marcados com "AJUSTE AA" e justificados em
+   maxwell-sistema.md.
+   Fontes (apenas 2 famílias, self-hosted em site/assets/fonts):
+   Fraunces (variável, opsz 9-144, peso 350-800) e Instrument Sans (400 e 600).
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. PRIMITIVOS
+   ========================================================================== */
+:root {
+  /* --- Paleta da marca (brand-foundation) --- */
+  --prim-lavanda: #ECE7F1;        /* fundo base; nunca branco puro */
+  --prim-tinta: #24203A;          /* quase-preto violeta: texto e logo */
+  --prim-tinta-2: #5B5675;        /* texto secundário original (passa AA só sobre lavanda lisa) */
+  --prim-rosa: #F7B3C8;           /* mancha de luz e ponto do logo */
+  --prim-rosa-forte: #E0568A;     /* ponto do logo; decorativo (falha AA como texto) */
+  --prim-ceu: #B9C7F5;            /* mancha de luz; confiança */
+  --prim-mel: #F8DDA8;            /* mancha de luz; comércio e acolhimento */
+  --prim-whats: #1FA855;          /* verde WhatsApp reconhecível: ícone, brilho, sombra */
+  --prim-branco: #FFFFFF;         /* só para texto sobre escuro e vidro; nunca fundo de página */
+
+  /* --- AJUSTE AA: derivados da paleta, mesmo matiz, mais escuros --- */
+  --prim-tinta-2-aa: #4D4862;     /* tinta-2 escurecida: 4,54:1 no pior caso (mancha rosa + grão) */
+  --prim-rosa-forte-aa: #901A47;  /* rosa-forte escurecida: 7,12:1 sobre lavanda; texto de destaque/erro */
+  --prim-whats-aa: #198845;       /* verde WhatsApp escurecido: 4,52:1 com texto branco */
+  --prim-whats-aa-hover: #157A3D; /* hover do botão WhatsApp: 5,41:1 */
+  --prim-whats-aa-active: #126B35;/* pressionado: 6,60:1 */
+  --prim-tinta-hover: #3A3554;    /* tinta um passo mais clara, hover de pílula ativa: 11,56:1 com branco */
+
+  /* --- Tons claros de feedback (mistura opaca da paleta sobre branco) --- */
+  --prim-rosa-35: #FCE4EC;        /* rosa 35% sobre branco: fundo de erro */
+  --prim-ceu-35: #E6EBFC;         /* céu 35% sobre branco: fundo de sucesso */
+  --prim-mel-50: #FCEED4;         /* mel 50% sobre branco: fundo de aviso */
+
+  /* --- Vidro fosco --- */
+  --prim-vidro-55: rgba(255, 255, 255, .55);   /* superfície de vidro padrão */
+  --prim-vidro-75: rgba(255, 255, 255, .75);   /* brilho alto do celular (início do gradiente) */
+  --prim-vidro-35: rgba(255, 255, 255, .35);   /* brilho baixo do celular (fim do gradiente) */
+  --prim-vidro-85: rgba(255, 255, 255, .85);   /* borda de vidro e fundo do selo */
+  --prim-vidro-70: rgba(255, 255, 255, .70);   /* vidro hover (mais opaco) */
+
+  /* --- Alfas da tinta (bordas, divisórias, sombras) --- */
+  --prim-tinta-a10: rgba(0, 0, 0, .10);         /* divisória de linhas na tela do celular */
+  --prim-tinta-a22: rgba(36, 32, 58, .22);      /* borda da pílula de segmento */
+  --prim-tinta-a40: rgba(36, 32, 58, .40);      /* borda da pílula em hover */
+  --prim-lavanda-a20: rgba(236, 231, 241, .20); /* [2026-11-04] (i) divisória sobre tinta (rodapé) */
+  --prim-sombra-violeta-a15: rgba(60, 40, 90, .15); /* sombra de etiquetas flutuantes */
+  --prim-sombra-violeta-a22: rgba(60, 40, 90, .22); /* sombra do celular */
+  --prim-sombra-whats-a28: rgba(31, 168, 85, .28);  /* brilho verde do botão WhatsApp */
+  --prim-sombra-whats-a36: rgba(31, 168, 85, .36);  /* brilho verde no hover */
+
+  /* --- Grão de papel (ruído fractal SVG do layout aprovado) --- */
+  --prim-grao: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --prim-grao-opacidade: .32;     /* opacidade global do grão */
+
+  /* --- Desfoque --- */
+  --prim-blur-6: 6px;             /* vidro leve (pílulas) */
+  --prim-blur-10: 10px;           /* vidro de barras/controles */
+  --prim-blur-12: 12px;           /* vidro de cartões e etiquetas */
+  --prim-blur-16: 16px;           /* vidro do celular */
+  --prim-blur-64: 64px;           /* manchas de luz */
+
+  /* --- Raios --- */
+  --prim-raio-11: 11px;           /* selo quadrado do logo */
+  --prim-raio-12: 12px;           /* amostras de cor, campos */
+  --prim-raio-16: 16px;           /* etiquetas flutuantes */
+  --prim-raio-20: 20px;           /* cartões */
+  --prim-raio-34: 34px;           /* tela do celular */
+  --prim-raio-44: 44px;           /* moldura do celular */
+  --prim-raio-pilula: 999px;      /* botões e pílulas */
+  --prim-raio-circulo: 50%;       /* manchas e pontos */
+
+  /* --- Espaçamento (escala base 4px, valores do layout) --- */
+  --prim-esp-1: 4px;
+  --prim-esp-2: 6px;
+  --prim-esp-3: 8px;
+  --prim-esp-4: 10px;
+  --prim-esp-5: 12px;
+  --prim-esp-6: 14px;
+  --prim-esp-7: 16px;
+  --prim-esp-8: 18px;
+  --prim-esp-9: 20px;
+  --prim-esp-10: 22px;
+  --prim-esp-11: 28px;
+  --prim-esp-12: 40px;
+  --prim-esp-13: 60px;
+  --prim-esp-14: 80px;
+
+  /* --- Famílias (só 2) --- */
+  --prim-fonte-serifa: 'Fraunces', Georgia, serif;                  /* títulos, logo, preços grandes */
+  --prim-fonte-sans: 'Instrument Sans', system-ui, sans-serif;      /* texto, botões, rótulos */
+
+  /* --- Pesos --- */
+  --prim-peso-400: 400;
+  --prim-peso-600: 600;
+  --prim-peso-700: 700;           /* só Fraunces (variável); Instrument Sans carrega 400/600 */
+  --prim-peso-800: 800;
+
+  /* --- Tamanhos tipográficos fluidos (360px → 1120px) --- */
+  --prim-fs-2xs: 9px;                                   /* selo de demonstração (dentro do mock) */
+  --prim-fs-xs: 0.75rem;                                /* 12px · rótulos de controle */
+  --prim-fs-sm: clamp(0.8125rem, 0.78rem + 0.15vw, 0.875rem); /* 13→14px · legendas, preço miúdo */
+  --prim-fs-md: clamp(0.9375rem, 0.9rem + 0.15vw, 1rem);      /* 15→16px · botões */
+  --prim-fs-lg: clamp(1rem, 0.94rem + 0.3vw, 1.125rem);       /* 16→18px · lead */
+  --prim-fs-xl: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);       /* 20→24px · logo, subtítulo */
+  --prim-fs-2xl: clamp(1.625rem, 1.3rem + 1.4vw, 2.25rem);    /* 26→36px · título de seção */
+  --prim-fs-3xl: clamp(2.25rem, 1.8rem + 2vw, 2.875rem);      /* 36→46px · preço grande */
+  --prim-fs-4xl: clamp(2.625rem, 6.6vw, 5.375rem);            /* 42→86px · título da home (layout) */
+
+  /* --- Entrelinha e espaçamento de letras --- */
+  --prim-lh-titulo: .95;
+  --prim-lh-justo: 1;
+  --prim-lh-texto: 1.5;
+  --prim-lh-legenda: 1.45;
+  --prim-ls-titulo: -0.028em;     /* ≈ -2.4px em 86px */
+  --prim-ls-logo: -0.025em;       /* ≈ -0.6px em 24px */
+  --prim-ls-rotulo: .1em;         /* rótulos em caixa alta */
+
+  /* --- Eixo de peso variável (título interativo) --- */
+  --prim-wght-repouso: 350;       /* peso das letras longe do cursor */
+  --prim-wght-pico: 800;          /* peso das letras sob o cursor */
+  --prim-wght-raio: 240;          /* px de alcance da influência do cursor (lido pelo JS) */
+
+  /* --- Durações --- */
+  --prim-dur-0: 0ms;
+  --prim-dur-140: 140ms;          /* inclinação do celular (segue o dedo) */
+  --prim-dur-200: 200ms;          /* hover de pílula */
+  --prim-dur-250: 250ms;          /* peso variável das letras */
+  --prim-dur-380: 380ms;          /* "mola" do celular ao trocar segmento */
+  --prim-dur-500: 500ms;          /* troca de cor da tela */
+  --prim-dur-600: 600ms;          /* troca do gradiente do topo */
+  --prim-dur-800: 800ms;          /* troca de cor da mancha */
+  --prim-dur-1200: 1200ms;        /* deriva das manchas */
+  --prim-dur-digitar: 50ms;       /* intervalo por letra do endereço digitado */
+
+  /* --- Curvas --- */
+  --prim-ease-mola: cubic-bezier(.2, 1.6, .4, 1);  /* passa do ponto e volta: assinatura de movimento */
+  --prim-ease-suave: cubic-bezier(.2, .8, .2, 1);  /* desaceleração longa (manchas) */
+  --prim-ease-saida: ease-out;                     /* resposta direta ao ponteiro */
+  --prim-ease-padrao: ease;
+
+  /* --- Profundidade 3D do celular --- */
+  --prim-perspectiva: 1000px;
+  --prim-tilt-y-max: 30deg;       /* rotação horizontal máxima pelo mouse */
+  --prim-tilt-x-max: 22deg;       /* rotação vertical máxima pelo mouse */
+  --prim-giro-y-max: 25deg;       /* limite pelo giroscópio */
+  --prim-giro-x-max: 20deg;
+  --prim-z-tag-1: 70px;           /* etiqueta flutuante 1 */
+  --prim-z-tag-2: 50px;           /* etiqueta flutuante 2 */
+
+  /* --- Camadas (z-index) --- */
+  --prim-z-0: 0;
+  --prim-z-2: 2;
+  --prim-z-40: 40;
+  --prim-z-50: 50;
+  --prim-z-60: 60;
+  --prim-z-70: 70;
+}
+
+
+/* ==========================================================================
+   2. SEMÂNTICOS
+   ========================================================================== */
+:root {
+  /* --- Fundos --- */
+  --cor-fundo-pagina: var(--prim-lavanda);          /* base de toda página */
+  --cor-fundo-invertido: var(--prim-tinta);         /* blocos escuros, pílula ativa, logo */
+  --cor-fundo-vidro: var(--prim-vidro-55);          /* superfícies de vidro */
+  --cor-fundo-vidro-hover: var(--prim-vidro-70);
+  --cor-borda-vidro: var(--prim-vidro-85);
+
+  /* --- Texto --- */
+  --cor-texto: var(--prim-tinta);                   /* texto principal: 12,86:1 sobre lavanda */
+  --cor-texto-2: var(--prim-tinta-2-aa);            /* AJUSTE AA: secundário seguro sobre manchas + grão */
+  --cor-texto-invertido: var(--prim-branco);        /* sobre tinta e sobre verde de ação */
+  --cor-texto-sobre-tinta: var(--prim-lavanda);     /* "P" do logo sobre o balão */
+  --cor-texto-destaque: var(--prim-rosa-forte-aa);  /* AJUSTE AA: destaque em texto */
+  --cor-texto-desabilitado: var(--prim-tinta-2);    /* aplicado com opacidade, isento de AA (WCAG 1.4.3) */
+
+  /* --- Ações --- */
+  --cor-acao-whats: var(--prim-whats-aa);           /* EXCLUSIVO para ações de WhatsApp */
+  --cor-acao-whats-hover: var(--prim-whats-aa-hover);
+  --cor-acao-whats-active: var(--prim-whats-aa-active);
+  --cor-acao-whats-icone: var(--prim-whats);        /* verde original para ícone/brilho */
+  --cor-acao-neutra: var(--prim-tinta);             /* ação neutra/seleção (nunca verde) */
+  --cor-acao-neutra-hover: var(--prim-tinta-hover);
+
+  /* --- Foco --- */
+  --cor-foco: var(--prim-tinta);                    /* anel de foco: 12,86:1 sobre lavanda */
+  --cor-foco-sobre-escuro: var(--prim-lavanda);     /* anel sobre fundo tinta ou verde */
+  --foco-largura: 2px;
+  --foco-offset: 3px;
+
+  /* --- Feedback (sem verde: verde é só WhatsApp) --- */
+  --cor-erro-texto: var(--prim-rosa-forte-aa);      /* 7,20:1 sobre fundo de erro */
+  --cor-erro-fundo: var(--prim-rosa-35);
+  --cor-erro-borda: var(--prim-rosa-forte);
+  --cor-sucesso-texto: var(--prim-tinta);           /* sucesso = tinta + céu + ícone de confirmação */
+  --cor-sucesso-fundo: var(--prim-ceu-35);
+  --cor-sucesso-borda: var(--prim-ceu);
+  --cor-aviso-fundo: var(--prim-mel-50);
+
+  /* --- Manchas de luz --- */
+  --cor-mancha-1: var(--prim-rosa);
+  --cor-mancha-2: var(--prim-ceu);
+  --cor-mancha-3: var(--prim-mel);                  /* trocada pelo JS conforme o segmento */
+  --mancha-blur: var(--prim-blur-64);
+  --mancha-opacidade: .75;
+
+  /* --- Textura --- */
+  --textura-grao: var(--prim-grao);
+  --textura-grao-opacidade: var(--prim-grao-opacidade);
+  --textura-grao-mistura: multiply;
+
+  /* --- Vidro --- */
+  --vidro-blur-leve: var(--prim-blur-6);
+  --vidro-blur: var(--prim-blur-12);
+  --vidro-blur-forte: var(--prim-blur-16);
+
+  /* --- Sombras (elevação) --- */
+  --sombra-1: 0 14px 30px var(--prim-sombra-violeta-a15);           /* etiqueta flutuante */
+  --sombra-2: 0 40px 80px var(--prim-sombra-violeta-a22);           /* celular */
+  --sombra-brilho-interno: inset 0 1px 0 var(--prim-branco);        /* fio de luz no topo do vidro */
+  --sombra-whats: 0 10px 24px var(--prim-sombra-whats-a28);
+  --sombra-whats-hover: 0 14px 30px var(--prim-sombra-whats-a36);
+
+  /* --- Raios --- */
+  --raio-sm: var(--prim-raio-12);
+  --raio-md: var(--prim-raio-16);
+  --raio-lg: var(--prim-raio-20);
+  --raio-pilula: var(--prim-raio-pilula);
+
+  /* --- Espaçamento semântico --- */
+  --esp-gutter: var(--prim-esp-10);                 /* margem lateral (22px) */
+  --esp-gap-inline: var(--prim-esp-3);              /* entre pílulas */
+  --esp-gap-cartoes: var(--prim-esp-6);             /* entre cartões */
+  --esp-secao: var(--prim-esp-14);                  /* entre seções */
+  --largura-max: 1120px;                            /* largura máxima do conteúdo */
+  /* [2026-11-02] (i) NOVOS (Task 3, site.css): degraus semânticos para o layout da home,
+     para o CSS do site não usar --prim-* direto. */
+  --esp-xs: var(--prim-esp-1);                      /* 4px · ajuste fino */
+  --esp-sm: var(--prim-esp-5);                      /* 12px · entre linhas de texto */
+  --esp-md: var(--prim-esp-7);                      /* 16px · entre blocos pequenos */
+  --esp-lg: var(--prim-esp-11);                     /* 28px · entre grupos */
+  --esp-xl: var(--prim-esp-12);                     /* 40px · respiro do topo */
+  --esp-secao-celular: var(--prim-esp-13);          /* 60px · entre seções no celular */
+  --largura-texto: 470px;                           /* medida máxima de parágrafo (layout aprovado) */
+
+  /* --- Tipografia semântica --- */
+  --fonte-titulo: var(--prim-fonte-serifa);
+  --fonte-texto: var(--prim-fonte-sans);
+  --fs-titulo-home: var(--prim-fs-4xl);
+  --fs-titulo-secao: var(--prim-fs-2xl);
+  --fs-preco-grande: var(--prim-fs-3xl);
+  --fs-lead: var(--prim-fs-lg);
+  --fs-corpo: var(--prim-fs-md);
+  --fs-legenda: var(--prim-fs-sm);
+  --fs-rotulo: var(--prim-fs-xs);
+  /* [2026-11-02] (i) NOVOS (Task 3, site.css): pesos, entrelinhas e subtítulo semânticos. */
+  --fs-subtitulo: var(--prim-fs-xl);
+  --peso-regular: var(--prim-peso-400);
+  --peso-forte: var(--prim-peso-600);
+  --peso-titulo: var(--prim-peso-700);
+  --peso-pesado: var(--prim-peso-800);
+  --lh-titulo: var(--prim-lh-titulo);
+  --lh-justo: var(--prim-lh-justo);
+  --lh-texto: var(--prim-lh-texto);
+  --lh-legenda: var(--prim-lh-legenda);
+  --ls-titulo: var(--prim-ls-titulo);
+  --ls-logo: var(--prim-ls-logo);
+  --ls-rotulo: var(--prim-ls-rotulo);
+  --numeros: tabular-nums;                          /* preços alinhados */
+
+  /* --- Título interativo --- */
+  --titulo-wght-repouso: var(--prim-wght-repouso);
+  --titulo-wght-pico: var(--prim-wght-pico);
+  --titulo-wght-raio: var(--prim-wght-raio);
+  --titulo-wght-transicao: var(--prim-dur-250);
+
+  /* --- Movimento --- */
+  --dur-instantaneo: var(--prim-dur-140);
+  --dur-rapido: var(--prim-dur-200);
+  --dur-medio: var(--prim-dur-380);
+  --dur-lento: var(--prim-dur-600);
+  --dur-deriva: var(--prim-dur-1200);
+  --dur-digitar: var(--prim-dur-digitar);
+  --ease-mola: var(--prim-ease-mola);
+  --ease-suave: var(--prim-ease-suave);
+  --ease-saida: var(--prim-ease-saida);
+  --mov-elevar: -2px;                               /* deslocamento vertical no hover */
+  --mov-encolher: .95;                              /* escala inicial da "mola" */
+  --mov-pressionar: .97;                            /* escala ao pressionar */
+
+  /* --- Camadas --- */
+  --z-mancha: var(--prim-z-0);
+  --z-conteudo: var(--prim-z-2);
+  --z-botao-fixo: var(--prim-z-40);                 /* botão fixo de WhatsApp */
+  --z-grao: var(--prim-z-50);                       /* grão por cima do conteúdo, sem eventos */
+  --z-controles: var(--prim-z-60);
+  --z-modal: var(--prim-z-70);
+
+  /* --- Estados genéricos --- */
+  --opacidade-desabilitado: .5;
+  --cursor-desabilitado: not-allowed;
+
+  /* --- Tempo de leitura de feedback ---
+     [2026-11-02] (i) NOVA: tempo que uma mensagem de sucesso fica visível antes de
+     voltar ao default (ex.: "Link copiado"). NÃO é duração de animação e por isso
+     NÃO é zerado em prefers-reduced-motion (antes era --dur-lento × 3, que virava 0ms). */
+  --tempo-feedback: 1800ms;
+
+  /* --- Esquema de cor ---
+     [2026-11-02] (i) NOVA: a marca não tem modo escuro (fundo sempre lavanda).
+     Declara esquema claro para controles nativos e barras de rolagem. */
+  color-scheme: light;
+}
+
+
+/* ==========================================================================
+   3. COMPONENTES
+   ========================================================================== */
+:root {
+  /* --- Botão WhatsApp (ação primária, única em verde) --- */
+  --btn-whats-bg: var(--cor-acao-whats);
+  --btn-whats-bg-hover: var(--cor-acao-whats-hover);
+  --btn-whats-bg-active: var(--cor-acao-whats-active);
+  --btn-whats-texto: var(--cor-texto-invertido);    /* 4,52 / 5,41 / 6,60 :1 */
+  --btn-whats-fonte: var(--prim-peso-600) var(--fs-corpo) / var(--prim-lh-justo) var(--fonte-texto);
+  --btn-whats-padding: 15px var(--prim-esp-10);
+  --btn-whats-gap: var(--prim-esp-4);
+  --btn-whats-raio: var(--raio-pilula);
+  --btn-whats-sombra: var(--sombra-whats);
+  --btn-whats-sombra-hover: var(--sombra-whats-hover);
+  --btn-whats-anel-foco: var(--cor-foco);           /* anel tinta fora do botão (offset) */
+  --btn-whats-elevar: var(--mov-elevar);
+  --btn-whats-transicao: transform var(--dur-rapido) var(--ease-mola), background-color var(--dur-rapido) var(--ease-saida), box-shadow var(--dur-rapido) var(--ease-saida);
+  --btn-whats-alvo-min: 48px;                       /* área de toque mínima */
+
+  /* --- Botão fixo de WhatsApp (celular) --- */
+  --btn-whats-fixo-distancia: var(--prim-esp-7);    /* do canto inferior direito */
+  --btn-whats-fixo-tamanho: 56px;
+  --btn-whats-fixo-z: var(--z-botao-fixo);
+
+  /* --- Botão secundário de vidro --- */
+  --btn-vidro-bg: var(--cor-fundo-vidro);
+  --btn-vidro-bg-hover: var(--cor-fundo-vidro-hover);
+  --btn-vidro-bg-active: var(--prim-vidro-85);
+  --btn-vidro-borda: var(--cor-borda-vidro);
+  --btn-vidro-texto: var(--cor-texto);              /* 14,32:1 sobre vidro */
+  --btn-vidro-blur: var(--vidro-blur);
+  --btn-vidro-fonte: var(--prim-peso-600) var(--fs-corpo) / var(--prim-lh-justo) var(--fonte-texto);
+  --btn-vidro-padding: 15px var(--prim-esp-10);
+  --btn-vidro-raio: var(--raio-pilula);
+  --btn-vidro-anel-foco: var(--cor-foco);
+
+  /* --- Pílula de segmento ("Escolha seu negócio") --- */
+  --pilula-bg: var(--cor-fundo-vidro);
+  --pilula-bg-hover: var(--cor-fundo-vidro-hover);
+  --pilula-bg-ativa: var(--cor-acao-neutra);
+  --pilula-bg-ativa-hover: var(--cor-acao-neutra-hover);
+  --pilula-borda: var(--prim-tinta-a22);
+  --pilula-borda-hover: var(--prim-tinta-a40);
+  --pilula-borda-ativa: var(--cor-acao-neutra);
+  --pilula-texto: var(--cor-texto);
+  --pilula-texto-ativa: var(--cor-texto-invertido); /* 15,64:1 */
+  --pilula-blur: var(--vidro-blur-leve);
+  --pilula-fonte: var(--prim-peso-600) var(--fs-corpo) / var(--prim-lh-justo) var(--fonte-texto);
+  --pilula-padding: var(--prim-esp-5) var(--prim-esp-8);
+  --pilula-raio: var(--raio-pilula);
+  --pilula-gap: var(--esp-gap-inline);
+  --pilula-elevar-hover: var(--mov-elevar);
+  --pilula-escala-active: var(--mov-pressionar);
+  --pilula-anel-foco: var(--cor-foco);
+  --pilula-foco-largura: var(--foco-largura);
+  --pilula-foco-offset: var(--foco-offset);
+  --pilula-transicao: transform var(--dur-rapido) var(--ease-mola), background-color var(--dur-rapido) var(--ease-saida), color var(--dur-rapido) var(--ease-saida);
+
+  /* --- Cartão de vidro --- */
+  --cartao-bg: var(--cor-fundo-vidro);
+  --cartao-borda: var(--cor-borda-vidro);
+  --cartao-blur: var(--vidro-blur);
+  --cartao-raio: var(--raio-lg);
+  --cartao-padding: var(--prim-esp-8);
+  --cartao-altura-min: 150px;
+  --cartao-texto: var(--cor-texto);
+  --cartao-texto-2: var(--cor-texto-2);             /* 7,95:1 sobre vidro */
+  --cartao-sombra-hover: var(--sombra-1);
+
+  /* --- Cartão de plano --- */
+  --plano-bg: var(--cor-fundo-vidro);
+  --plano-bg-destaque: var(--cor-fundo-invertido);  /* plano recomendado em tinta */
+  --plano-borda: var(--cor-borda-vidro);
+  --plano-borda-destaque: var(--prim-tinta);
+  --plano-texto: var(--cor-texto);
+  --plano-texto-destaque: var(--cor-texto-invertido);
+  --plano-texto-2: var(--cor-texto-2);
+  --plano-texto-2-destaque: var(--prim-lavanda);    /* 12,86:1 sobre tinta */
+  --plano-raio: var(--raio-lg);
+  --plano-padding: var(--prim-esp-10);
+  --plano-blur: var(--vidro-blur);
+  --plano-sombra: var(--sombra-1);
+  --plano-preco-fonte: var(--prim-peso-800) var(--fs-preco-grande) / var(--prim-lh-justo) var(--fonte-titulo);
+  --plano-preco-ls: -0.033em;                       /* ≈ -1.5px em 46px */
+  --plano-preco-numeros: var(--numeros);
+  --plano-nome-fonte: var(--prim-peso-600) var(--fs-rotulo) / var(--prim-lh-texto) var(--fonte-texto);
+  --plano-nome-ls: var(--prim-ls-rotulo);
+  --plano-gap: var(--prim-esp-6);
+  --plano-anel-foco-destaque: var(--cor-foco-sobre-escuro); /* [2026-11-02] (i) NOVA: anel do botão dentro do plano em tinta (12,86:1); tinta sobre tinta seria 1:1 */
+
+  /* --- Selo "Modelo de demonstração · Pompeu Web" --- */
+  --selo-bg: var(--prim-vidro-85);
+  --selo-texto: var(--prim-tinta);                  /* ≥ 11,49:1 sobre qualquer topo de modelo */
+  --selo-fonte: var(--prim-peso-400) var(--prim-fs-2xs) / var(--prim-lh-justo) var(--fonte-texto);
+  --selo-padding: var(--prim-esp-1) var(--prim-esp-3);
+  --selo-raio: var(--raio-pilula);
+  --selo-distancia: var(--prim-esp-5);              /* do canto superior esquerdo */
+  --selo-fs-real: var(--prim-fs-xs);                /* 12px quando o selo é usado no modelo em tela cheia */
+
+  /* --- Celular da prévia --- */
+  --cel-largura: 290px;
+  --cel-altura: 590px;
+  --cel-largura-sm: 250px;                          /* abaixo de 860px */
+  --cel-altura-sm: 510px;
+  --cel-raio: var(--prim-raio-44);
+  --cel-padding: 11px;
+  --cel-bg: linear-gradient(145deg, var(--prim-vidro-75), var(--prim-vidro-35));
+  --cel-borda: var(--cor-borda-vidro);
+  --cel-blur: var(--vidro-blur-forte);
+  --cel-sombra: var(--sombra-2), var(--sombra-brilho-interno);
+  --cel-perspectiva: var(--prim-perspectiva);
+  --cel-tilt-y-max: var(--prim-tilt-y-max);
+  --cel-tilt-x-max: var(--prim-tilt-x-max);
+  --cel-giro-y-max: var(--prim-giro-y-max);
+  --cel-giro-x-max: var(--prim-giro-x-max);
+  --cel-transicao: transform var(--dur-instantaneo) var(--ease-saida);
+  --cel-mola-dur: var(--dur-medio);
+  --cel-mola-ease: var(--ease-mola);
+  --cel-mola-escala: var(--mov-encolher);
+  --cel-tela-raio: var(--prim-raio-34);
+  --cel-tela-transicao: background var(--prim-dur-500), color var(--prim-dur-500);
+  --cel-topo-transicao: background var(--dur-lento);
+  --cel-divisoria: var(--prim-tinta-a10);
+  --cel-titulo-fonte: var(--prim-peso-800) 31px / var(--prim-lh-justo) var(--fonte-titulo);
+  --cel-whats-bg: var(--cor-acao-whats);            /* botão WhatsApp dentro do mock */
+  --cel-whats-texto: var(--cor-texto-invertido);
+  /* [2026-11-02] (i) NOVOS (Task 3): o iframe da prévia renderiza o modelo a 390px
+     (largura de celular real) e é reduzido para caber na tela da moldura.
+     escala = (--cel-largura - 2 × --cel-padding) / --cel-tela-base. */
+  --cel-tela-base: 390px;
+  --cel-tela-escala: .6872;                         /* (290 - 22) / 390 */
+  --cel-tela-escala-sm: .5846;                      /* (250 - 22) / 390 */
+  /* Prévia no modo computador: o iframe tem 1280 × 800 e o JS calcula --escala. */
+  --previa-pc-largura: 1280px;
+  --previa-pc-altura: 800px;
+  --previa-pc-raio: var(--raio-lg);
+  --previa-pc-padding: var(--prim-esp-4);
+
+  /* --- Etiqueta flutuante (preço, endereço digitado) --- */
+  --tag-bg: var(--cor-fundo-vidro);
+  --tag-borda: var(--cor-borda-vidro);
+  --tag-blur: var(--vidro-blur);
+  --tag-raio: var(--raio-md);
+  --tag-padding: var(--prim-esp-5) var(--prim-esp-7);
+  --tag-sombra: var(--sombra-1);
+  --tag-z-1: var(--prim-z-tag-1);
+  --tag-z-2: var(--prim-z-tag-2);
+  --tag-rotacao-1: 5deg;
+  --tag-rotacao-2: -4deg;
+
+  /* --- Mancha de luz --- */
+  --mancha-transicao: transform var(--dur-deriva) var(--ease-suave), background var(--prim-dur-800);
+  --mancha-deriva-x: 120px;                         /* deslocamento máximo pelo cursor */
+  --mancha-deriva-y: 110px;
+  /* [2026-11-02] (i) NOVOS (Task 3): tamanhos das 3 manchas do layout aprovado. */
+  --mancha-tamanho-1: 560px;
+  --mancha-tamanho-2: 480px;
+  --mancha-tamanho-3: 400px;
+
+  /* --- Rodapé --- */
+  --rodape-divisoria: var(--prim-lavanda-a20);      /* [2026-11-04] (i) linha entre chamada e faixa */
+
+  /* --- Logo --- */
+  --logo-balao: var(--prim-tinta);
+  --logo-letra: var(--prim-lavanda);
+  --logo-ponto: var(--prim-rosa);
+  --logo-wght-repouso: var(--prim-peso-800);
+  --logo-wght-hover: var(--prim-peso-400);
+  --logo-transicao: font-variation-settings var(--dur-medio) var(--ease-mola), transform var(--dur-medio) var(--ease-mola);
+}
+
+/* --- Ajustes responsivos de componente --- */
+@media (max-width: 860px) {
+  :root {
+    --cel-largura: var(--cel-largura-sm);
+    --cel-altura: var(--cel-altura-sm);
+    --cel-tela-escala: var(--cel-tela-escala-sm);
+  }
+}
+
+
+/* ==========================================================================
+   MOVIMENTO REDUZIDO — zera durações, curvas e deslocamentos.
+   Título fica no peso de repouso, celular não inclina, manchas não derivam,
+   endereço aparece inteiro (JS deve ler --dur-digitar = 0ms).
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --prim-dur-140: 0ms;
+    --prim-dur-200: 0ms;
+    --prim-dur-250: 0ms;
+    --prim-dur-380: 0ms;
+    --prim-dur-500: 0ms;
+    --prim-dur-600: 0ms;
+    --prim-dur-800: 0ms;
+    --prim-dur-1200: 0ms;
+    --prim-dur-digitar: 0ms;
+
+    --prim-ease-mola: linear;
+    --prim-ease-suave: linear;
+
+    --mov-elevar: 0px;
+    --mov-encolher: 1;
+    --mov-pressionar: 1;
+
+    --cel-tilt-y-max: 0deg;
+    --cel-tilt-x-max: 0deg;
+    --cel-giro-y-max: 0deg;
+    --cel-giro-x-max: 0deg;
+    --mancha-deriva-x: 0px;
+    --mancha-deriva-y: 0px;
+
+    --titulo-wght-pico: var(--prim-wght-repouso);   /* sem efeito de peso */
+    --logo-wght-hover: var(--prim-peso-800);
+  }
+}

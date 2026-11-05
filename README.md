@@ -1,36 +1,16 @@
-# pedropompeu.github.io — AI Product Engineer
+# pedropompeu.github.io — Pompeu Web (provisório)
 
-Página estática (HTML puro, sem build) para GitHub Pages.
-Posicionamento: **AI Product Engineer | Python, LLM Agents & APIs de alta performance | Django + React**
+Site da Pompeu Web publicado aqui até o primeiro cliente. Depois ele vai para a Hostinger em `pompeuweb.com.br`.
 
-## Rodar local
+**Não edite os arquivos deste repositório à mão.** A fonte fica em `Projetos_holding/Projeto-PompeuWeb-02-11-2026/site/`. Para atualizar:
+
 ```bash
-python3 -m http.server 8000 --directory /home/usuario/Dev/pedropompeu.github.io
-# abrir http://localhost:8000
+cd ~/Dev/Projetos_holding/Projeto-PompeuWeb-02-11-2026
+python3 tools/pacote.py --github      # roda os testes e gera dist/github/
+cd ~/Dev/pedropompeu.github.io
+git rm -rq --ignore-unmatch -- . ':!README.md' ':!.superpowers'
+cp -a ~/Dev/Projetos_holding/Projeto-PompeuWeb-02-11-2026/dist/github/. .
+git add -A && git commit -m "chore: update pompeu web site" && git push
 ```
 
-## Deploy (2 opções)
-
-**A — User site (recomendado): `https://pedropompeu.github.io`**
-1. No GitHub, crie o repo `pedropompeu.github.io` (público)
-2. Neste pasta:
-```bash
-git init -b main
-git add index.html .nojekyll README.md
-git commit -m "feat: add AI Product Engineer page"
-git remote add origin https://github.com/pedropompeu/pedropompeu.github.io.git
-git push -u origin main
-```
-3. Settings > Pages > Deploy from branch > main / root. Propaga em ~1 min.
-
-**B — Project site:** crie repo `ai-profile`, push igual, ativa Pages. URL será `pedropompeu.github.io/ai-profile`.
-
-## Estado atual
-- [x] Email oficial: pedrolpompeu@gmail.com · tel (53) 98109-7510
-- [x] Canônicos: LinkedIn `/in/pedro-pompeu` + GitHub `@pedropompeu`
-- [x] Cases com prints reais em `assets/`: Trello IA, app Floripa, dados Postgres
-- [x] Hero interativo estilo KreaKodo (código RAG se digitando + parallax + glow no mouse)
-- [ ] Unificar empresa atual: currículo diz `Nexxera`, LinkedIn diz `Grupo Nexxees`
-- [ ] Métricas da Nexxera (p95 / coverage) quando tiver
-- [ ] Foto profissional + favicon (opcional)
-- [ ] Custom domain (opcional): adicionar `CNAME`
+O portfólio antigo de AI Product Engineer continua no histórico do git (commit `a9ca07f`).
