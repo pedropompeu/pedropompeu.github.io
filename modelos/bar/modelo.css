@@ -93,14 +93,27 @@ p { margin: 0 0 1em; }
 .grupo h3 { margin-bottom: .3em; }
 .grupo > p { color: var(--tinta-suave); font-size: .95rem; margin-bottom: .6em; }
 .itens { list-style: none; margin: 0; padding: 0; }
-.itens li { display: flex; align-items: baseline; gap: 10px; padding: 12px 0; border-top: 1px dashed #B9AC93; }
+.itens li { border-top: 1px dashed #B9AC93; }
+.itens .item { display: flex; align-items: baseline; gap: 10px; padding: 12px 0; }
 .itens .nome { font-weight: 700; }
 .itens .desc { display: block; font-weight: 400; font-size: .9rem; color: var(--tinta-suave); }
 .itens .preco { margin-left: auto; font-family: var(--titulo); font-weight: 800; font-size: 1.1rem; white-space: nowrap; padding-left: 8px; }
-.destaque-foto { position: relative; border-radius: 22px; overflow: hidden; min-height: 260px; background: var(--noite); }
-.destaque-foto img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
-.destaque-foto p { position: absolute; left: 0; right: 0; bottom: 0; margin: 0; padding: 90px 20px 18px; background: linear-gradient(0deg, #10213A 0%, rgba(16,33,58,.96) 55%, rgba(16,33,58,0) 100%); color: var(--osso); font-weight: 600; }
-.destaque-foto strong { display: block; font-family: var(--titulo); font-size: 1.4rem; color: var(--ambar); }
+
+/* Cardápio interativo, só CSS: cada item com foto é um radio; o marcado mostra a foto.
+   Até 999px: a foto abre logo abaixo do item. A partir de 1000px: a foto ocupa a moldura ao lado. */
+.dica-cardapio { margin: -12px 0 18px; font-weight: 600; color: var(--tinta-suave); font-size: .95rem; }
+.itens input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+.itens label.item { cursor: pointer; margin-inline: -10px; padding-inline: 10px; border-radius: 12px; transition: background-color .2s ease; }
+.itens label.item .nome::before { content: ''; display: inline-block; width: 8px; height: 8px; margin-right: 8px; border-radius: 50%; background: var(--ambar); vertical-align: .15em; opacity: .55; }
+@media (hover: hover) { .itens label.item:hover { background: #F7F1E6; } }
+.itens li:has(input:checked) label.item { background: #FBEBCF; }
+.itens li:has(input:checked) .nome::before { opacity: 1; }
+.itens li:has(input:focus-visible) label.item { outline: 3px solid var(--noite); outline-offset: 2px; }
+.prato-foto { display: none; }
+.itens li:has(input:checked) .prato-foto { display: block; margin: 4px 0 12px; border-radius: 16px; overflow: hidden; background: var(--noite); aspect-ratio: 4 / 3; animation: foto-aparece .35s ease; }
+.prato-foto img { width: 100%; height: 100%; object-fit: cover; }
+.moldura-foto { display: none; }
+@keyframes foto-aparece { from { opacity: 0; } to { opacity: 1; } }
 
 /* Agenda */
 .palco { display: grid; gap: 28px; }
@@ -142,8 +155,7 @@ p { margin: 0 0 1em; }
 @media (min-width: 720px) {
   .hero-corpo { padding-block: 100px 120px; }
   .secao { padding-block: 92px; }
-  .cardapio { grid-template-columns: 1fr 1fr; }
-  .destaque-foto { min-height: 0; }
+  .cardapio { grid-template-columns: 1fr 1fr; align-items: start; }
   .palco { grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
   .palco-foto { position: sticky; top: 24px; }
   .reserva { grid-template-columns: 1.2fr 1fr; gap: 56px; }
@@ -151,12 +163,14 @@ p { margin: 0 0 1em; }
   .rodape-grade { grid-template-columns: 1.4fr 1fr 1fr; }
 }
 @media (min-width: 1000px) {
-  .cardapio { grid-template-columns: 1fr 1fr 1fr; }
-  .cardapio .destaque-foto { grid-row: span 1; }
+  /* Bebidas | Petiscos | foto: a foto do item marcado ocupa a moldura da terceira coluna. */
+  .cardapio { position: relative; grid-template-columns: 1fr 1fr 1fr; align-items: stretch; }
+  .moldura-foto { display: block; border-radius: 22px; background: var(--noite); }
+  .itens li:has(input:checked) .prato-foto { position: absolute; top: 0; right: 0; bottom: 0; width: calc((100% - 44px) / 3); margin: 0; border-radius: 22px; aspect-ratio: auto; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  * { transition: none !important; }
+  * { transition: none !important; animation: none !important; }
   .botao-cheio:hover { transform: none; }
 }
