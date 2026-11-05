@@ -18,6 +18,7 @@ const previa = {
   timer: null,
   segmento: 'cafeteria',
   carregou: false,
+  marcarInicial: () => {}, // definido em initSegmentos
 };
 
 function nomeDe(seg) {
@@ -107,14 +108,20 @@ function initPrevia() {
     definirEstado('pronto', textoPronto());
   });
 
-  // No computador a prévia carrega quando entra na tela; no celular, só após o toque num segmento.
-  if (!soCelular() && 'IntersectionObserver' in window) {
+  // A prévia carrega a cafeteria quando entra na tela (no celular, só ao chegar nela, para não gastar
+  // dados de quem não rola até lá). Se a pessoa já tocou num negócio, fica o que ela escolheu.
+  const carregarSozinho = () => {
+    if (previa.carregou) return;
+    previa.marcarInicial();
+    carregar();
+  };
+  if ('IntersectionObserver' in window) {
     const obs = new IntersectionObserver((entradas) => {
       if (entradas.some((e) => e.isIntersecting)) {
         obs.disconnect();
-        if (!previa.carregou) carregar();
+        carregarSozinho();
       }
-    }, { rootMargin: '200px' });
+    }, { rootMargin: soCelular() ? '0px' : '200px' });
     obs.observe(previa.secao);
   } else if (!soCelular()) {
     carregar();
@@ -217,8 +224,9 @@ function initSegmentos() {
     });
   });
 
-  // No celular a prévia começa vazia: nenhum segmento aparece como escolhido.
+  // No celular nenhum segmento aparece escolhido até o toque ou até a prévia carregar sozinha.
   const inicial = botoes.find((b) => b.dataset.segmento === 'cafeteria');
+  if (inicial) previa.marcarInicial = () => marcar(inicial);
   if (inicial && !soCelular()) marcar(inicial);
 }
 

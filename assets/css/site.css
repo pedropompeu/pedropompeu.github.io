@@ -1118,11 +1118,11 @@ main > :not(.hero),
   font-size: var(--fs-corpo);
 }
 
-.caso-quadros {
-  display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
-  align-items: start;
-  gap: var(--esp-gap-inline);
+/* Print em pé (celular): recorta na faixa do mapa para ficar do tamanho dos outros casos. */
+.caso-mapa img {
+  aspect-ratio: 1100 / 773;
+  object-fit: cover;
+  object-position: 50% 70%;
 }
 
 
@@ -1404,10 +1404,6 @@ main > :not(.hero),
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .caso-dados {
-    grid-column: 1 / -1;
-  }
-
   .oferta {
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
@@ -1493,10 +1489,6 @@ main > :not(.hero),
 
   .casos {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .caso-dados {
-    grid-column: auto;
   }
 
   #faq {
