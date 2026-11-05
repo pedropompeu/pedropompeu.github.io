@@ -1472,6 +1472,10 @@ main > :not(.hero),
     padding-top: var(--esp-secao);
   }
 
+  .pagina-texto {
+    padding-bottom: var(--esp-secao);
+  }
+
   .incluso li {
     padding-block: var(--esp-gap-inline);
     line-height: var(--lh-legenda);
